@@ -17,16 +17,20 @@ Serverless transcoding
   $ npm install
   ```
 
-4. Define the following local variables before deploying to cloud on your AWS infrastructure and replace the X's with your actual AWS Account that can be found in My Account|Account Settings.   
-  ```
-  $ export AWS_ACCOUNT=XXXXXXXXX
-  ```  
-5. You must have your account credentials setup in ~/.aws/credentials with a key and secret with enough permissions to deploy.
+4.  Setup a local env-local.yml file 
+The following is an example and does not include real variable values. Replace the ACCOUNT variable with your AWS Account found in "My Account|Account Settings"
 
-6. Deploy.  This will create queues & the xcode-lambda function (if not already created).
+```
+environment:
+  ACCOUNT: XXXXXXXX
+  REGION: us-east-1
+```
+
+5. Deploy.  This will create queues & the xcode-lambda function (if not already created).
   ```
   $ serverless deploy -v
   ```  
+  
   
   
   
