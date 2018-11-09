@@ -27,3 +27,16 @@ Serverless transcoding
   ```
   $ serverless deploy -v
   ```  
+  
+  
+  
+  # Other Useful commands
+  ## Remove the entire stack you deployed
+   ```
+  $ serverless remove
+  ```  
+  ## Deploy just the lambda function 
+   ```
+  $ serverless deploy function --function xcode
+  ```  
+  
