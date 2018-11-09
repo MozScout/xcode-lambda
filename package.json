@@ -1,0 +1,53 @@
+{
+  "name": "xcode-lambda",
+  "version": "1.0.0",
+  "dependencies": {
+    "ava": "^0.24.0",
+    "aws-sdk": "^2.348.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^5.8.0",
+    "fs-extra": "^5.0.0",
+    "node-uuid-generator": "^1.0.0",
+    "nyc": "^13.1.0",
+    "serverless-s3-remover": "^0.4.1",
+    "serverless-webpack": "^4.2.0",
+    "webpack": "^3.10.0",
+    "webpack-plugin-copy": "^1.0.1",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "prettier": "^1.15.1",
+    "sinon": "^7.1.1"
+  },
+  "scripts": {
+    "deploy": "serverless deploy function -f ffmpeg",
+    "stack-create": "sls deploy -v",
+    "stack-destroy": "sls remove -v",
+    "logs": "sls logs -f ffmpeg -t",
+    "test-watch": "npm run test -- --watch",
+    "test-ci": "npm run test -- --verbose",
+    "test": "npm run lint && npm run unit-test",
+    "unit-test": "nyc --reporter=text mocha test/unit && nyc report --reporter=html",
+    "lint": "eslint ."
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testMatch": [
+      "**/test/**/*-test.(js)"
+    ],
+    "mapCoverage": true,
+    "setupTestFrameworkScriptFile": "<rootDir>/test/common.js",
+    "testEnvironment": "node"
+  },
+  "author": "Tamara Hills <thills@mozilla.com>",
+  "license": "MIT"
+}
