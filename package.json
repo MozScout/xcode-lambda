@@ -8,6 +8,7 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
+    "dynamoose": "^1.1.0",
     "eslint": "^5.8.0",
     "fs-extra": "^5.0.0",
     "node-uuid-generator": "^1.0.0",

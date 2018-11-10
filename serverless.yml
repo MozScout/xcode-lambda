@@ -30,7 +30,7 @@ provider:
     - Effect: 'Allow'
       Action:
         - 'sqs:*'
-      Resource: 'arn:aws:sqs:${self:provider.region}:${env:AWS_ACCOUNT}:*'
+      Resource: 'arn:aws:sqs:${file(./env-local.yml):REGION}:${file(./env-local.yml):ACCOUNT}:*'
     - Effect: 'Allow'
       Action:
         - 's3:PutObject'
@@ -101,8 +101,10 @@ functions:
 #          trigger: PreSignUp
 
 #    Define function environment variables here
-#    environment:
-#      variable2: value2
+    environment:
+      OPUS_CAF_ARGS: '-codec:a libopus -ar 48000 -b:a 24k -f caf'
+      OPUS_OGG_ARGS: '-codec:a libopus -ar 48000 -b:a 24k -f ogg'
+      POLLY_S3_BUCKET: '${file(./env-local.yml):POLLY_S3_BUCKET}'
 
 # you can add CloudFormation resource templates here
 resources:

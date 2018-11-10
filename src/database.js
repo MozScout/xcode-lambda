@@ -5,27 +5,26 @@ const logger = require('./logger');
 class Database {
   async updateDatabaseWithUrl(item_id, url, codec) {
     logger.info(`updateDatabaseWithUrl for ${item_id}`);
+    let uuid = await this.getItemUuid(item_id, codec);
+    logger.info(`uuid is:  ${uuid}`);
+    await this.updateItem(item_id, uuid, url);
+  }
+
+  async updateItem(item_id, uuid, url) {
     return new Promise((resolve, reject) => {
-      try {
-        let uuid = await this.getItemUuid(item_id, codec);
-        logger.debug('uuid is:  ' + uuid);
-        AudioFiles.update(
-          { item_id: item_id, uuid: uuid },
-          { url: url },
-          function(err) {
-            if (err) {
-              logger.error('Error updating: ' + err);
-              reject(err);
-            } else {
-              logger.debug('Updated database');
-              resolve();
-            }
+      AudioFiles.update(
+        { item_id: item_id, uuid: uuid },
+        { url: url },
+        function(err) {
+          if (err) {
+            reject(err);
+            logger.error(`Error updating:  ${err}`);
+          } else {
+            logger.debug('Updated database');
+            resolve();
           }
-        );
-      } catch (err) {
-        logger.error('error is: ' + err);
-        reject(err);
-      }
+        }
+      );
     });
   }
 

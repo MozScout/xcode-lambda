@@ -23,7 +23,7 @@ const basename = require('path').basename;
 const extname = require('path').extname;
 const Database = require('./database');
 const database = new Database();
-const logger = require('./src/logger');
+const logger = require('./logger');
 
 process.env['PATH'] += ':' + process.env['LAMBDA_TASK_ROOT'];
 process.env['FFMPEG_PATH'] = '/var/task/binaries/ffmpeg/ffmpeg';
@@ -104,8 +104,8 @@ class XcodeHelper {
 
       var fileStream = createReadStream(newAudioFile);
       fileStream.on('error', function(err) {
-        logger.error('File Error' + err);
-        reject('File error:' + err);
+        logger.error(`File Error: ${err}`);
+        reject(`File error: ${err}`);
         return;
       });
 
@@ -114,9 +114,9 @@ class XcodeHelper {
       s3.upload(bucketParams, function(err, data) {
         if (err) {
           logger.error('error uploading');
-          reject('error uploading:' + err);
+          reject(`error uploading: ${err}`);
         } else {
-          logger.debug('Upload Success' + data.Location);
+          logger.info(`Upload Success: ' ${data.Location}`);
           // Return the URL of the Mp3 in the S3 bucket.
           resolve(data.Location);
         }
@@ -124,66 +124,83 @@ class XcodeHelper {
     });
   }
 
-  //process.env.XCODE_ARGS.split(' ');
   getXcodeArgs(codec) {
-    let args = '';
+    let args = {};
     if (codec == 'opus-caf') {
-      args = process.env.OPUS_CAF_ARGS;
+      args.format = process.env.OPUS_CAF_ARGS.split(' ');
+      args.extension = 'caf';
     } else if (codec == 'opus-ogg') {
-      args = process.env.OPUS_OGG_ARGS;
+      args.format = process.env.OPUS_OGG_ARGS.split(' ');
+      args.extension = 'ogg';
     } else {
       logger.error(`Error: Invalid codec: ${codec}`);
     }
     return args;
   }
 
-  ffmpeg(file, extension, codec) {
+  ffmpeg(file, codec) {
     return new Promise((resolve, reject) => {
       const outputDirectory = tmpdir();
 
-      let xcodeArgs = getXcodeArgs(codec);
-      let newFileName = `${join(
-        outputDirectory,
-        basename(file, extname(file))
-      )}.${extension}`;
-      logger.debug('New filename: ' + newFileName);
+      let xcodeArgs = this.getXcodeArgs(codec);
+      if (!xcodeArgs.format) {
+        reject('No format');
+      } else {
+        let newFileName = `${join(
+          outputDirectory,
+          basename(file, extname(file))
+        )}.${xcodeArgs.extension}`;
+        logger.info('New filename: ' + newFileName);
+        logger.info(`xcodeArgs.format: |${xcodeArgs.format}|`);
+        logger.info('Old filename: ' + file);
+        const args = [
+          '-y',
+          '-loglevel',
+          'warning',
+          '-i',
+          file,
+          ...(xcodeArgs.format || []),
+          newFileName
+        ];
 
-      const args = [
-        '-y',
-        '-loglevel',
-        'warning',
-        '-i',
-        file,
-        ...(xcodeArgs || []),
-        newFileName
-      ];
+        logger.info('Running: ffmpeg', args.join(' '));
 
-      logger.debug('Running: ffmpeg', args.join(' '));
+        const opts = {};
 
-      const opts = {};
+        const child = spawn(
+          './binaries/ffmpeg/ffmpeg',
+          args,
+          /*   [
+            '-y',
+            '-loglevel',
+            'warning',
+            '-i',
+            '/tmp/00027f2d-d6f2-4c22-9f7a-28fe55cc590e.mp3',
+            '-codec:a libopus',
+            '-ar 48000',
+            '-b:a 24k',
+            '-f caf'
+          ],*/
+          opts
+        )
+          .on('message', msg => logger.info(msg))
+          .on('error', reject)
+          .on('close', () => resolve(newFileName));
 
-      const child = spawn('./binaries/ffmpeg/ffmpeg', args, opts)
-        .on('message', msg => logger.debug(msg))
-        .on('error', reject)
-        .on('close', () => resolve(newFileName));
-
-      child.stdout.on('data', data => process.stdout.write(data));
-      child.stderr.on('data', data => process.stdout.write(data));
+        child.stdout.on('data', data => process.stdout.write(data));
+        child.stderr.on('data', data => process.stdout.write(data));
+      }
     });
   }
 
-  updateDatabase(file, item_id, codec) {
-    return new Promise((resolve, reject) => {
-      let url = `https://s3.amazonaws.com/${
-        process.env.POLLY_S3_BUCKET
-      }/${file}`;
-      try {
-        await database.updateDatabaseWithUrl(item_id, url, codec);
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
+  getFileSize(file) {
+    let stats = fs.statSync(file);
+    return stats['size'];
+  }
+
+  async updateDatabase(file, item_id, codec) {
+    let url = `https://s3.amazonaws.com/${process.env.POLLY_S3_BUCKET}/${file}`;
+    await database.updateDatabaseWithUrl(item_id, url, codec);
   }
 
   deleteFile(file) {
