@@ -3,18 +3,18 @@ const constants = require('./constants');
 const logger = require('./logger');
 
 class Database {
-  async updateDatabaseWithUrl(item_id, url, codec) {
+  async updateDatabaseWithUrl(item_id, url, codec, size) {
     logger.info(`updateDatabaseWithUrl for ${item_id}`);
     let uuid = await this.getItemUuid(item_id, codec);
     logger.info(`uuid is:  ${uuid}`);
-    await this.updateItem(item_id, uuid, url);
+    await this.updateItem(item_id, uuid, url, size);
   }
 
-  async updateItem(item_id, uuid, url) {
+  async updateItem(item_id, uuid, url, size) {
     return new Promise((resolve, reject) => {
       AudioFiles.update(
         { item_id: item_id, uuid: uuid },
-        { url: url },
+        { url: url, size: size },
         function(err) {
           if (err) {
             reject(err);
