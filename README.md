@@ -36,6 +36,8 @@ environment:
 $ serverless deploy -v
 ```
 
+6. Update the SQS_QUEUE url env var in scout-ua.  This will make the scout-ua send a transcoding request to the Queue.  You can get the URL of the Queue in the SQS console. 
+
 # Other Useful commands
 
 ## Remove the entire stack you deployed
