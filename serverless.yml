@@ -62,6 +62,7 @@ provider:
 functions:
   xcode:
     handler: handler.xcode
+    timeout: 420
     reservedConcurrency: 1
     events:
       - sqs:
@@ -113,6 +114,20 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: xcode-queue
+        VisibilityTimeout: 420
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - xcodeDeadLetterQueue
+            - Arn
+          maxReceiveCount: 10
+
+    xcodeDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: xcode-dead-letter-queue
+        MessageRetentionPeriod: 1209600
+
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
