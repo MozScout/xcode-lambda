@@ -51,3 +51,6 @@ $ serverless remove
 ```
 $ serverless deploy function --function xcode
 ```
+
+#Acknowledgements
+Uses a precompiled version of ffmpeg from https://github.com/binoculars/ffmpeg-build-lambda/releases.  Should we ever need to rebuild ffmpeg, the build instructions are here: https://trac.ffmpeg.org/wiki/CompilationGuide
