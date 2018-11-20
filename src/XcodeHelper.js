@@ -129,9 +129,10 @@ class XcodeHelper {
     if (codec == 'opus-caf') {
       args.format = process.env.OPUS_CAF_ARGS.split(' ');
       args.extension = 'caf';
-    } else if (codec == 'opus-ogg') {
-      args.format = process.env.OPUS_OGG_ARGS.split(' ');
-      args.extension = 'ogg';
+    } else if (codec == 'opus-mkv') {
+      logger.info('This is an opus-mkv file');
+      args.format = process.env.OPUS_MKV_ARGS.split(' ');
+      args.extension = 'mkv';
     } else {
       logger.error(`Error: Invalid codec: ${codec}`);
     }
