@@ -5,6 +5,7 @@ module.exports = Object.freeze({
     TYPE_FIELD: 'type',
     CODEC_FIELD: 'codec',
     URL_FIELD: 'url',
-    MOBILE_TYPE: 'mobile'
+    MOBILE_TYPE: 'mobile',
+    LOCALE_FIELD: 'locale'
   }
 });

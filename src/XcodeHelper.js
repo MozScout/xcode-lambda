@@ -199,9 +199,9 @@ class XcodeHelper {
     return stats['size'];
   }
 
-  async updateDatabase(file, item_id, codec, filesize) {
+  async updateDatabase(file, item_id, codec, filesize, locale) {
     let url = `https://s3.amazonaws.com/${process.env.POLLY_S3_BUCKET}/${file}`;
-    await database.updateDatabaseWithUrl(item_id, url, codec, filesize);
+    await database.updateDatabaseWithUrl(item_id, url, codec, filesize, locale);
   }
 
   deleteFile(file) {
