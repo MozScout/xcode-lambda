@@ -31,7 +31,8 @@ module.exports.xcode = async event => {
       basename(outputPath),
       body.item_id,
       body.targetCodec,
-      filesize
+      filesize,
+      body.locale
     );
     return {
       statusCode: 200,
